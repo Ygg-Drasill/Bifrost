@@ -1,11 +1,11 @@
-import { Handle, Node, NodeProps, Position } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 
 function NodeRoot() {
 return (
-    <div className='node-base' style={{backgroundColor: "#ecffed", borderColor: "#99eeaa"}}>
-      <span>Root</span>
+    <div className='node-base node-round-right' style={{backgroundColor: "#ecffed", borderColor: "#99eeaa", color: "#99eeaa"}}>
+      <span>▶</span>
       <Handle type="source" position={Position.Right} />
     </div>
-)};
+)}
 
 export default NodeRoot;

@@ -10,20 +10,28 @@ import ReactFlow, {
   OnEdgesChange,
   OnConnect,
   NodeTypes,
-  DefaultEdgeOptions
+  DefaultEdgeOptions,
+  Background,
+  MiniMap
 } from 'reactflow';
  
 import NodeRoot from './nodes/NodeRoot';
+import NodeCompare from './nodes/NodeCompare';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import './nodes/node.css';
  
 const initialNodes: Node[] = [
-  { id: '1', data: { label: 'Node 1' }, position: { x: 5, y: 5 } },
-  { id: '2', data: { label: 'Node 2' }, position: { x: 5, y: 100 } }, 
-  { id: '3', data: { label: 'Node 3' }, type: 'root', position: { x: 5, y: 150 } },
+  { id: '1', data: { label: 'Node 3' }, type: 'root', position: { x: 5, y: 5 } },
+  { id: '2', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 5 } },
+  { id: '3', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 150 } },
+  { id: '4', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 300 } },
+  { id: '5', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 450 } },
+  { id: '6', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 600 } },
+  { id: '7', data: { label: 'Node 3' }, type: 'compare', position: { x: 150, y: 750 } },
 ];
  
-const initialEdges: Edge[] = [{ id: 'e1-2', source: '1', target: '2' }];
+const initialEdges: Edge[] = [];
  
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
@@ -35,8 +43,10 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
  
 const nodeTypes: NodeTypes = {
   root: NodeRoot,
+  compare: NodeCompare,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
     let timeout: ReturnType<typeof setTimeout> | null = null;
   
@@ -68,23 +78,23 @@ const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [e
 
     useEffect(() => {
         debouncedNodeMutation(nodes)
-    }, [nodes]);
+    }, [debouncedNodeMutation, nodes]);
 
     useEffect(() => {
         debouncedEdgeMutation(edges)
-    }, [edges]);
+    }, [debouncedEdgeMutation, edges]);
  
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes) => setNodes((nodes) => applyNodeChanges(changes, nodes)),
     [setNodes],
   );
 
   const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    (changes) => setEdges((edges) => applyEdgeChanges(changes, edges)),
     [setEdges],
   );
   const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
+    (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges],
   );
 
@@ -99,7 +109,12 @@ const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [e
       fitViewOptions={fitViewOptions}
       defaultEdgeOptions={defaultEdgeOptions}
       nodeTypes={nodeTypes}
-    />
+      zoomOnDoubleClick={true}
+    >
+      <MiniMap pannable />
+      <Background color="#aaa" gap={16} />
+    </ReactFlow>
+    
   );
 }
 
