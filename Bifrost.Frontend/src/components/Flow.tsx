@@ -87,7 +87,7 @@ const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [e
     (connection) => setEdges((eds) => addEdge(connection, eds)),
     [setEdges],
   );
- 
+
   return (
     <ReactFlow
       nodes={nodes}
