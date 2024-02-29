@@ -35,7 +35,21 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const nodeTypes: NodeTypes = {
   custom: NodeRoot,
 };
- 
+
+export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+  
+    const debounced = (...args: Parameters<F>) => {
+      if (timeout !== null) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      timeout = setTimeout(() => func(...args), waitFor);
+    };
+  
+    return debounced as (...args: Parameters<F>) => ReturnType<F>;
+  };
+
 function Flow() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
@@ -48,12 +62,12 @@ function Flow() {
     return axios.post('http://localhost:9000/update/edges', nodes);
   });
 
-  useEffect(() => {
-    nodeMutation.mutate(nodes);
-  }, [nodes]);
+    useEffect(() => {
+        debounce(() => nodeMutation.mutate(nodes), 500);
+    }, [nodes]);
 
     useEffect(() => {
-        edgeMutation.mutate(edges);
+        debounce(() => edgeMutation.mutate(edges), 500);
     }, [edges]);
  
   const onNodesChange: OnNodesChange = useCallback(
