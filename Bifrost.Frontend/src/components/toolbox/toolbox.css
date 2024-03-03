@@ -3,6 +3,34 @@
     flex-direction: column;
     height: 100%;
     width: 15%;
-    border-right: 2px solid #c8d6da;
+    border-right: 2px solid var(--c-black);
     padding: 1rem;
+    box-sizing: border-box;
+}
+
+.node-list {
+    flex-grow: 1;
+}
+
+.logo {
+    display: block;
+    background-image: url(bifrost.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    width: 64px;
+    height: 64px;
+}
+
+.toolbox-node-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 2rem;
+    border: 2px solid red;
+}
+
+.toolbox-node-item:hover {
+    cursor: grab;
 }

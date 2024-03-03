@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, DragEventHandler } from 'react';
 import ReactFlow, {
   addEdge,
   FitViewOptions,
@@ -12,7 +12,9 @@ import ReactFlow, {
   NodeTypes,
   DefaultEdgeOptions,
   Background,
-  MiniMap
+  MiniMap,
+  Controls,
+  ReactFlowInstance
 } from 'reactflow';
  
 import NodeRoot from './nodes/NodeRoot';
@@ -36,11 +38,11 @@ const initialEdges: Edge[] = [];
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
 };
- 
+
 const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: true,
 };
- 
+
 const nodeTypes: NodeTypes = {
   root: NodeRoot,
   compare: NodeCompare,
@@ -61,28 +63,66 @@ export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: nu
     return debounced as (...args: Parameters<F>) => ReturnType<F>;
 };
 
+export type YggNode = {
+  id: string;
+  nodeType: string;
+};
+
+export type YggEdge = {
+  source: string;
+  target: string;
+};
+
+function mapToYggNode(node: Node): YggNode {
+  if (!node.type) {
+    throw new Error(`Node type is not defined for node with id ${node.id}`);
+  }
+  return {
+    id: node.id,
+    nodeType: node.type,
+  };
+}
+
+function mapToYggEdge(edge: Edge): YggEdge {
+  edge.sourceHandle
+  return {
+    source: edge.source,
+    target: edge.target,
+  };
+}
+
+let id = 0;
+const getId = () => `${id++}`;
+
 function Flow() {
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance>();
+
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  const nodeMutation = useMutation((nodes: Node[]) => {
-    return axios.post('http://localhost:9000/update/nodes', nodes);
+  const [yggNodes, setYggNodes] = useState<YggNode[]>([]);
+  const [yggEdges, setYggEdges] = useState<YggEdge[]>([]);
+
+  const nodeMutation = useMutation((nodes: YggNode[]) => {
+    return axios.post('http://localhost:9000/update/nodes', nodes, { headers: { 'Content-Type': 'application/json' } });
   });
 
-  const edgeMutation = useMutation((edges: Edge[]) => {
-    return axios.post('http://localhost:9000/update/edges', edges);
+  const edgeMutation = useMutation((edges: YggEdge[]) => {
+    return axios.post('http://localhost:9000/update/edges', edges, { headers: { 'Content-Type': 'application/json' } });
   });
  
-const debouncedNodeMutation = useCallback(debounce(nodeMutation.mutate, 500), [nodeMutation.mutate]);
-const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [edgeMutation.mutate]);
+  const debouncedNodeMutation = useCallback(debounce(nodeMutation.mutate, 500), [nodeMutation.mutate]);
+  const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [edgeMutation.mutate]);
 
-    useEffect(() => {
-        debouncedNodeMutation(nodes)
-    }, [debouncedNodeMutation, nodes]);
+  useEffect(() => {
+      setYggNodes(nodes.map(mapToYggNode));
+      debouncedNodeMutation(yggNodes)
+  }, [debouncedNodeMutation, nodes]);
 
-    useEffect(() => {
-        debouncedEdgeMutation(edges)
-    }, [debouncedEdgeMutation, edges]);
+  useEffect(() => {
+    setYggEdges(edges.map(mapToYggEdge));
+      debouncedEdgeMutation(yggEdges)
+  }, [debouncedEdgeMutation, edges]);
  
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nodes) => applyNodeChanges(changes, nodes)),
@@ -98,8 +138,46 @@ const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [e
     [setEdges],
   );
 
+  const onDragOverCallback = useCallback((event: DragEvent) => {
+    if (event.dataTransfer == null) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDropCallback = useCallback(
+    (event: DragEvent) => {
+      if (reactFlowInstance == undefined) return;
+      if (event.dataTransfer == null) return;
+      event.preventDefault();
+      console.log("dropping");
+      
+
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      if (typeof type === 'undefined' || !type) {
+        return;
+      }
+
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type} node` },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [reactFlowInstance],
+  );
+
   return (
     <ReactFlow
+      onInit={setReactFlowInstance}
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
@@ -110,9 +188,13 @@ const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [e
       defaultEdgeOptions={defaultEdgeOptions}
       nodeTypes={nodeTypes}
       zoomOnDoubleClick={true}
+
+      onDragOver={onDragOverCallback}
+      onDrop={onDropCallback}
     >
       <MiniMap pannable />
       <Background color="#aaa" gap={16} />
+      <Controls />
     </ReactFlow>
     
   );

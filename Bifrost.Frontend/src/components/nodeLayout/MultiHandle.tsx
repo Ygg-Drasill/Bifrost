@@ -12,15 +12,15 @@ function MultiHandle(props: MultiHandleProps) {
     <div className="multi-handle">
         {props.position == Position.Left 
             ? props.ids.map((id) => (
-            <div className="handle-and-label">
-                <Handle type={props.type} position={props.position} id={id} key={id} />
-                <p>{id}</p>
+            <div key={"handle-"+id} className="handle-and-label">
+                <Handle type={props.type} position={props.position} id={id}/>
+                <p>{id.toUpperCase()}</p>
             </div>
             ))
             : props.ids.map((id) => (
-            <div className="handle-and-label">
-                <p>{id}</p>
-                <Handle type={props.type} position={props.position} id={id} key={id} />
+            <div key={"handle-"+id} className="handle-and-label">
+                <p>{id.toUpperCase()}</p>
+                <Handle type={props.type} position={props.position} id={id}/>
             </div>
             ))
         }

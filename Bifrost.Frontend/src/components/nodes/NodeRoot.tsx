@@ -4,7 +4,7 @@ function NodeRoot() {
 return (
     <div className='node-base node-round-right' style={{backgroundColor: "#ecffed", borderColor: "#99eeaa", color: "#99eeaa"}}>
       <span>▶</span>
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" id='out' position={Position.Right} />
     </div>
 )}
 
