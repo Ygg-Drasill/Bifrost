@@ -18,7 +18,7 @@ return (
         <p>B</p>
       </NodeBody>
     
-      <MultiHandle type='source' position={Position.Right} ids={["true", "false"]} />
+      <MultiHandle type='source' position={Position.Right} ids={["result"]} />
     </div>
 )}
 
