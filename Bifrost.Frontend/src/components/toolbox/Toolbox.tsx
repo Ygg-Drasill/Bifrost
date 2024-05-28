@@ -9,7 +9,7 @@ function ToolBox() {
   return (
     <div className="toolbox">
       <div className="node-list">
-        <div className="toolbox-node-item" onDragStart={event => onDragStart(event, "compare")} draggable>
+        <div className="toolbox-node-item" onDragStart={event => onDragStart(event, "arit")} draggable>
 
         </div>
       </div>
