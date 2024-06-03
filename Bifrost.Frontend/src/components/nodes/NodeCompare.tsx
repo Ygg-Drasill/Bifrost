@@ -6,7 +6,7 @@ import NodeBody from '../nodeLayout/NodeBody';
 function NodeCompare() {
 return (
     <div className='node-base'>
-      <MultiHandle type='target' position={Position.Left} ids={["a", "b"]} />
+      <MultiHandle type='target' position={Position.Left} ids={["in"]} />
       <NodeBody>
         <p>A</p>
         <select name="operator" id="operator" style={{height: "fit-content"}}>
@@ -18,7 +18,7 @@ return (
         <p>B</p>
       </NodeBody>
     
-      <MultiHandle type='source' position={Position.Right} ids={["result"]} />
+      <MultiHandle type='source' position={Position.Right} ids={["out"]} />
     </div>
 )}
 

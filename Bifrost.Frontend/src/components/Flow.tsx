@@ -32,6 +32,9 @@ const initialNodes: Node[] = [
   { id: '5', data: { label: 'Node 5' }, type: 'arit', position: { x: 150, y: 450 } },
   { id: '6', data: { label: 'Node 6' }, type: 'arit', position: { x: 150, y: 600 } },
   { id: '7', data: { label: 'Node 7' }, type: 'arit', position: { x: 150, y: 750 } },
+  { id: '8', data: { label: 'Node 8' }, type: 'arit', position: { x: 150, y: 900 } },
+  { id: '9', data: { label: 'Node 9' }, type: 'arit', position: { x: 150, y: 1050 } },
+  { id: '10', data: { label: 'Node 10' }, type: 'arit', position: { x: 150, y: 1200 } },
 ];
  
 const initialEdges: Edge[] = [];
