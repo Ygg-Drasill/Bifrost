@@ -1,0 +1,41 @@
+.vertical-line {
+    display: flex;
+    width: 1px;
+    height: 100%;
+    background-color: #000;
+}
+
+
+
+.multi-handle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.handle-and-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.handle-and-label > .react-flow__handle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    top: auto;
+    transform: none;
+}
+
+.handle-and-label > p {
+    margin: 0;
+}
+
+.node-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 0 24px;
+}
