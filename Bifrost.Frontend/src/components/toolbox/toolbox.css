@@ -9,7 +9,12 @@
 }
 
 .node-list {
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .logo {
@@ -29,6 +34,9 @@
     width: 100%;
     height: 2rem;
     border: 2px solid red;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 4px;
 }
 
 .toolbox-node-item:hover {

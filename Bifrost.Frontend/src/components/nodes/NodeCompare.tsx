@@ -5,6 +5,9 @@ import NodeBody from '../nodeLayout/NodeBody';
 
 function NodeCompare() {
 return (
+  <div className="node-title">
+        <p>Node Compare</p>
+
     <div className='node-base'>
       <MultiHandle type='target' position={Position.Left} ids={["a", "b"]} />
       <NodeBody>
@@ -19,6 +22,7 @@ return (
       </NodeBody>
     
       <MultiHandle type='source' position={Position.Right} ids={["true", "false"]} />
+    </div>
     </div>
 )}
 
