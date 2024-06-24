@@ -1,7 +1,8 @@
+import { DragEvent } from "react";
 import "./toolbox.css";
 
 function ToolBox() {
-  const onDragStart = (event, nodeType) => {
+  const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
@@ -34,6 +35,11 @@ function ToolBox() {
             onDragStart={(event) => onDragStart(event, "result")}
             draggable
           >Result Node</div>
+          <div
+            className="toolbox-node-item"
+            onDragStart={(event) => onDragStart(event, "ifstatement")}
+            draggable
+          >If-statement Node</div>
       </div>
     </div>
   );

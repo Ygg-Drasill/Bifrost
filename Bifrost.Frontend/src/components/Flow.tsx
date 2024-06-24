@@ -1,4 +1,6 @@
+import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
+import { useMutation } from 'react-query';
 import ReactFlow, {
   Background,
   Controls,
@@ -16,27 +18,19 @@ import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges
 } from 'reactflow';
- 
-import axios from 'axios';
-import { useMutation } from 'react-query';
 import NodeArithmetic from './nodes/NodeArithmetic';
 import NodeCompare from './nodes/NodeCompare';
-import NodeDeclare from './nodes/NodeDeclare';
+import NodeDeclare from "./nodes/NodeDeclare";
+import NodeIfstatement from './nodes/NodeIfstatement';
 import NodeResult from './nodes/NodeResult';
 import NodeRoot from './nodes/NodeRoot';
 import './nodes/node.css';
- 
+
 const initialNodes: Node[] = [
-  { id: '1', data: { label: 'Node 1' }, type: 'root', position: { x: 0, y: 100 } },
-  { id: '2', data: { label: 'Node 2' }, type: 'declare', position: { x: 150, y: 0 } },
-  { id: '3', data: { label: 'Node 3' }, type: 'arithmetic', position: { x: 150, y: 100 } },
-  { id: '4', data: { label: 'Node 4' }, type: 'compare', position: { x: 150, y: 200 } },
-  { id: '5', data: { label: 'Node 5' }, type: 'result', position: { x: 150, y: 300 } },
-  
 ];
- 
+
 const initialEdges: Edge[] = [];
- 
+
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
 };
@@ -51,26 +45,28 @@ const nodeTypes: NodeTypes = {
   arithmetic: NodeArithmetic,
   declare: NodeDeclare,
   result: NodeResult,
+  ifstatement: NodeIfstatement,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
-    let timeout: ReturnType<typeof setTimeout> | null = null;
-  
-    const debounced = (...args: Parameters<F>) => {
-      if (timeout !== null) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      timeout = setTimeout(() => func(...args), waitFor);
-    };
-  
-    return debounced as (...args: Parameters<F>) => ReturnType<F>;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+
+  return debounced as (...args: Parameters<F>) => ReturnType<F>;
 };
 
 export type YggNode = {
   id: string;
   nodeType: string;
+  data: any;
 };
 
 export type YggEdge = {
@@ -85,18 +81,18 @@ function mapToYggNode(node: Node): YggNode {
   return {
     id: node.id,
     nodeType: node.type,
+    data: node.data,
   };
 }
 
 function mapToYggEdge(edge: Edge): YggEdge {
-  edge.sourceHandle
   return {
     source: edge.source,
     target: edge.target,
   };
 }
 
-let id = 0;
+let id = 1;
 const getId = () => `${id++}`;
 
 function Flow() {
@@ -115,20 +111,20 @@ function Flow() {
   const edgeMutation = useMutation((edges: YggEdge[]) => {
     return axios.post('http://localhost:9000/update/edges', edges, { headers: { 'Content-Type': 'application/json' } });
   });
- 
+
   const debouncedNodeMutation = useCallback(debounce(nodeMutation.mutate, 500), [nodeMutation.mutate]);
   const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [edgeMutation.mutate]);
 
   useEffect(() => {
-      setYggNodes(nodes.map(mapToYggNode));
-      debouncedNodeMutation(yggNodes)
+    setYggNodes(nodes.map(mapToYggNode));
+    debouncedNodeMutation(yggNodes);
   }, [debouncedNodeMutation, nodes]);
 
   useEffect(() => {
     setYggEdges(edges.map(mapToYggEdge));
-      debouncedEdgeMutation(yggEdges)
+    debouncedEdgeMutation(yggEdges);
   }, [debouncedEdgeMutation, edges]);
- 
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nodes) => applyNodeChanges(changes, nodes)),
     [setNodes],
@@ -138,24 +134,23 @@ function Flow() {
     (changes) => setEdges((edges) => applyEdgeChanges(changes, edges)),
     [setEdges],
   );
+
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges],
   );
 
-  const onDragOverCallback = useCallback((event: DragEvent) => {
+  const onDragOverCallback = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     if (event.dataTransfer == null) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
   const onDropCallback = useCallback(
-    (event: DragEvent) => {
+    (event: React.DragEvent<HTMLDivElement>) => {
       if (reactFlowInstance == undefined) return;
       if (event.dataTransfer == null) return;
       event.preventDefault();
-      console.log("dropping");
-      
 
       const type = event.dataTransfer.getData('application/reactflow');
 
@@ -180,6 +175,27 @@ function Flow() {
     [reactFlowInstance],
   );
 
+  const updateNodeData = (id: string, newData: { result: any; }) => {
+    //console.log(`Updating node ${id} with data:`, newData); // Debugging line
+    setNodes((nodes) =>
+      nodes.map((node) => (node.id === id ? { ...node, data: { ...node.data, ...newData } } : node))
+    );
+  };
+
+  const calculateResults = () => {
+    const declareNode = nodes.find((node) => node.type === 'declare');
+    const resultNode = nodes.find((node) => node.type === 'result');
+
+    if (declareNode && resultNode) {
+      const value = declareNode.data.value;
+      updateNodeData(resultNode.id, { result: value });
+    }
+  };
+
+  useEffect(() => {
+    calculateResults();
+  }, [nodes, edges]);
+
   return (
     <ReactFlow
       onInit={setReactFlowInstance}
@@ -193,7 +209,6 @@ function Flow() {
       defaultEdgeOptions={defaultEdgeOptions}
       nodeTypes={nodeTypes}
       zoomOnDoubleClick={true}
-
       onDragOver={onDragOverCallback}
       onDrop={onDropCallback}
     >
@@ -201,7 +216,6 @@ function Flow() {
       <Background color="#aaa" gap={16} />
       <Controls />
     </ReactFlow>
-    
   );
 }
 
