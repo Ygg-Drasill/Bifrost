@@ -5,17 +5,16 @@ import NodeBody from "../nodeLayout/NodeBody";
 function NodeArithmetic() {
   return (
     <div className="node-title">
-        <p>Arithmetic Node</p>
-
+        <p>Arithmetic</p>
     <div className="node-base">
       <MultiHandle type="target" position={Position.Left} ids={["a", "b"]} />
       <NodeBody>
         <p>A</p>
         <select name="operator" id="operator" style={{ height: "fit-content" }}>
-          <option value="+"> + </option>
-          <option value="-"> - </option>
-          <option value="/"> / </option>
-          <option value="*"> * </option>
+          <option value="add"> + </option>
+          <option value="sub"> - </option>
+          <option value="div"> / </option>
+          <option value="mul"> * </option>
         </select>
         <p>B</p>
       </NodeBody>
@@ -23,7 +22,7 @@ function NodeArithmetic() {
       <MultiHandle
         type="source"
         position={Position.Right}
-        ids={["C"]}
+        ids={["result"]}
       />
       </div>
     </div>

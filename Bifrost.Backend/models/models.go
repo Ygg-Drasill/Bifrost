@@ -6,6 +6,8 @@ type Node struct {
 }
 
 type Edge struct {
-	Source string `json:"source"`
-	Target string `json:"target"`
+	SourceId  string `json:"sourceId"`
+	SourceVar string `json:"sourceVar"`
+	TargetId  string `json:"targetId"`
+	TargetVar string `json:"targetVar"`
 }

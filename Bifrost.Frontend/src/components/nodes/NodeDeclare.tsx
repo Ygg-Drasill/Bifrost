@@ -27,7 +27,7 @@ function NodeDeclare({ id, data }: NodeDeclareProps) {
 
   return (
     <div className="node-title">
-      <p>Declare Node</p>
+      <p>Declare</p>
       <div className="node-base">
         <NodeBody>
           <input 

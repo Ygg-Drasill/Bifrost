@@ -1,3 +1,9 @@
+github.com/Ygg-Drasill/Sleipnir v1.0.0-report h1:/DMl4CZIFTbA5EqJRzeMUfg3Dbsy/N4keq1C9Ukik9o=
+github.com/Ygg-Drasill/Sleipnir v1.0.0-report/go.mod h1:rWwAxfFPszSGVNG7WscdQVHSYSScAf4VyhbbzgKzc8A=
+github.com/Ygg-Drasill/Sleipnir v1.0.1 h1:1sTw/FoM2RayG+2vEUc3XVK/UhgtTGb9zOtuR0DSbYw=
+github.com/Ygg-Drasill/Sleipnir v1.0.1/go.mod h1:rWwAxfFPszSGVNG7WscdQVHSYSScAf4VyhbbzgKzc8A=
+github.com/bytecodealliance/wasmtime-go v1.0.0 h1:9u9gqaUiaJeN5IoD1L7egD8atOnTGyJcNp8BhkL9cUU=
+github.com/bytecodealliance/wasmtime-go v1.0.0/go.mod h1:jjlqQbWUfVSbehpErw3UoWFndBXRRMvfikYH6KsCwOg=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
 github.com/bytedance/sonic v1.10.0-rc/go.mod h1:ElCzW+ufi8qKqNW0FY314xriJhyJhuoJ3gFZdAHF7NM=
 github.com/bytedance/sonic v1.11.2 h1:ywfwo0a/3j9HR8wsYGWsIWl2mvRsI950HyoxiBERw5A=

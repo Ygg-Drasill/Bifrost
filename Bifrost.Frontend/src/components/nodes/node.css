@@ -17,6 +17,8 @@
 .node-base {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    min-width: 6rem;
     padding: 8px;
     border-radius: 4px;
     border: 1px solid var(--c-black);

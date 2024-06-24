@@ -5,7 +5,7 @@ import NodeBody from "../nodeLayout/NodeBody";
 function NodeIfstatement() {
   return (
     <div className="node-title">
-        <p>If-statement Node</p>
+        <p>If-statement</p>
 
     <div className="node-base">
       <MultiHandle type="target" position={Position.Left} ids={["a", "b"]} />

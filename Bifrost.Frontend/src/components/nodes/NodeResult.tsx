@@ -23,7 +23,7 @@ function NodeResult({ data }: NodeResultProps) {
 
   return (
     <div className="node-title">
-      <p>Result Node</p>
+      <p>Print</p>
       <div className="node-base">
         <MultiHandle type='target' position={Position.Left} ids={["text"]} />
         <NodeBody>

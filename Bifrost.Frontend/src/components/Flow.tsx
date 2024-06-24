@@ -23,8 +23,12 @@ import NodeCompare from './nodes/NodeCompare';
 import NodeDeclare from "./nodes/NodeDeclare";
 import NodeIfstatement from './nodes/NodeIfstatement';
 import NodeResult from './nodes/NodeResult';
-import NodeRoot from './nodes/NodeRoot';
 import './nodes/node.css';
+import NodeAdd from './nodes/NodeAdd';
+import NodeSubtract from './nodes/NodeSub';
+import NodeDivide from './nodes/NodeDivide';
+import NodeMultiply from './nodes/NodeMultiply';
+import NodeModulo from './nodes/NodeModulo';
 
 const initialNodes: Node[] = [
 ];
@@ -40,12 +44,16 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 };
 
 const nodeTypes: NodeTypes = {
-  root: NodeRoot,
   compare: NodeCompare,
   arithmetic: NodeArithmetic,
   declare: NodeDeclare,
-  result: NodeResult,
+  print: NodeResult,
   ifstatement: NodeIfstatement,
+  add: NodeAdd,
+  subtract: NodeSubtract,
+  divide: NodeDivide,
+  multiply: NodeMultiply,
+  modulo: NodeModulo
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,12 +74,13 @@ export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: nu
 export type YggNode = {
   id: string;
   nodeType: string;
-  data: any;
 };
 
 export type YggEdge = {
-  source: string;
-  target: string;
+  sourceId: string;
+  sourceVar: string;
+  targetId: string;
+  targetVar: string;
 };
 
 function mapToYggNode(node: Node): YggNode {
@@ -81,14 +90,15 @@ function mapToYggNode(node: Node): YggNode {
   return {
     id: node.id,
     nodeType: node.type,
-    data: node.data,
   };
 }
 
 function mapToYggEdge(edge: Edge): YggEdge {
   return {
-    source: edge.source,
-    target: edge.target,
+    sourceId: edge.source,
+    sourceVar: edge.sourceHandle || '',
+    targetId: edge.target,
+    targetVar: edge.targetHandle || '',
   };
 }
 
@@ -118,12 +128,10 @@ function Flow() {
   useEffect(() => {
     setYggNodes(nodes.map(mapToYggNode));
     debouncedNodeMutation(yggNodes);
-  }, [debouncedNodeMutation, nodes]);
 
-  useEffect(() => {
     setYggEdges(edges.map(mapToYggEdge));
     debouncedEdgeMutation(yggEdges);
-  }, [debouncedEdgeMutation, edges]);
+  }, [debouncedNodeMutation, nodes, edges, debouncedEdgeMutation]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nodes) => applyNodeChanges(changes, nodes)),
@@ -174,27 +182,6 @@ function Flow() {
     },
     [reactFlowInstance],
   );
-
-  const updateNodeData = (id: string, newData: { result: any; }) => {
-    //console.log(`Updating node ${id} with data:`, newData); // Debugging line
-    setNodes((nodes) =>
-      nodes.map((node) => (node.id === id ? { ...node, data: { ...node.data, ...newData } } : node))
-    );
-  };
-
-  const calculateResults = () => {
-    const declareNode = nodes.find((node) => node.type === 'declare');
-    const resultNode = nodes.find((node) => node.type === 'result');
-
-    if (declareNode && resultNode) {
-      const value = declareNode.data.value;
-      updateNodeData(resultNode.id, { result: value });
-    }
-  };
-
-  useEffect(() => {
-    calculateResults();
-  }, [nodes, edges]);
 
   return (
     <ReactFlow

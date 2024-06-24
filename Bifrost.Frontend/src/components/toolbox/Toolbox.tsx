@@ -7,39 +7,35 @@ function ToolBox() {
     event.dataTransfer.effectAllowed = "move";
   };
 
+  const nodes = [
+    "declare",
+    "compare",
+    "arithmetic",
+    "add",
+    "subtract",
+    "multiply",
+    "divide",
+    "print",
+    "ifstatement",
+  ]
+
   return (
     <div className="toolbox">
       <div className="toolbox-logo">
-      <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
-      <h1>Toolbox</h1>
-      </div>  
+        <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
+        <h1>Toolbox</h1>
+      </div>
 
       <div className="node-list">
-      <div
-          className="toolbox-node-item"
-          onDragStart={(event) => onDragStart(event, "declare")}
-          draggable
-        >Declare Node</div>
-        <div
-          className="toolbox-node-item"
-          onDragStart={(event) => onDragStart(event, "compare")}
-          draggable
-        >Compare Node</div>
-          <div
+        {nodes.map((nodeType) => (
+            <div
             className="toolbox-node-item"
-            onDragStart={(event) => onDragStart(event, "arithmetic")}
+            onDragStart={(event) => onDragStart(event, nodeType)}
             draggable
-          >Arithmetic Node</div>
-          <div
-            className="toolbox-node-item"
-            onDragStart={(event) => onDragStart(event, "result")}
-            draggable
-          >Result Node</div>
-          <div
-            className="toolbox-node-item"
-            onDragStart={(event) => onDragStart(event, "ifstatement")}
-            draggable
-          >If-statement Node</div>
+          >
+            {nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}
+          </div>
+        ))}
       </div>
     </div>
   );

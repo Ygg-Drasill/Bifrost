@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Bifrost/models"
-	"Bifrost/transformer"
-	"Bifrost/utils"
+	"bifrost/models"
+	"bifrost/transformer"
+	"bifrost/utils"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -25,15 +25,20 @@ func main() {
 		utils.HandleError(context.BindJSON(&nodes))
 		fmt.Println(nodes)
 		ydt.UpdateNodes(nodes)
+		ydt.ParseToFile()
+		ydt.Compile()
 		context.JSON(http.StatusOK, gin.H{
 			"message": "nodes updated",
 		})
 	}
+
 	edgesHandler := func(context *gin.Context) {
 		var edges []models.Edge
 		utils.HandleError(context.BindJSON(&edges))
 		fmt.Println(edges)
 		ydt.UpdateEdges(edges)
+		ydt.ParseToFile()
+		ydt.Compile()
 		context.JSON(http.StatusOK, gin.H{
 			"message": "edges updated",
 		})
