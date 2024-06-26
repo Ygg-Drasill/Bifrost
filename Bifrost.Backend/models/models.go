@@ -3,6 +3,7 @@ package models
 type Node struct {
 	Id       string `json:"id"`
 	NodeType string `json:"nodeType"`
+	Data     any    `json:"data"`
 }
 
 type Edge struct {

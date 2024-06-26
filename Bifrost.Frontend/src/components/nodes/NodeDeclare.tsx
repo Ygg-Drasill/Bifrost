@@ -39,7 +39,7 @@ function NodeDeclare({ id, data }: NodeDeclareProps) {
         <MultiHandle
           type="source"
           position={Position.Right}
-          ids={["a"]}
+          ids={["value"]}
         />
       </div>
     </div>

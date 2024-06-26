@@ -15,19 +15,18 @@ function ToolBox() {
     "subtract",
     "multiply",
     "divide",
+    "modulo",
     "print",
     "ifstatement",
+    "getMemory",
+    "setMemory",
+    "move"
   ]
 
   return (
     <div className="toolbox">
-      <div className="toolbox-logo">
-        <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
-        <h1>Toolbox</h1>
-      </div>
-
       <div className="node-list">
-        {nodes.map((nodeType) => (
+        {nodes.map((nodeType, i) => (
             <div
             className="toolbox-node-item"
             onDragStart={(event) => onDragStart(event, nodeType)}
@@ -36,6 +35,10 @@ function ToolBox() {
             {nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}
           </div>
         ))}
+      </div>
+      <div className="toolbox-footer">
+        <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
+        <h1>Bifrost</h1>
       </div>
     </div>
   );

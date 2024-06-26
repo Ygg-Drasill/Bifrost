@@ -29,6 +29,9 @@ import NodeSubtract from './nodes/NodeSub';
 import NodeDivide from './nodes/NodeDivide';
 import NodeMultiply from './nodes/NodeMultiply';
 import NodeModulo from './nodes/NodeModulo';
+import NodeGetMemory from './nodes/NodeGetMemory';
+import NodeSetMemory from './nodes/NodeSetMemory';
+import NodeMove from './nodes/NodeMove';
 
 const initialNodes: Node[] = [
 ];
@@ -53,7 +56,10 @@ const nodeTypes: NodeTypes = {
   subtract: NodeSubtract,
   divide: NodeDivide,
   multiply: NodeMultiply,
-  modulo: NodeModulo
+  modulo: NodeModulo,
+  setMemory: NodeSetMemory,
+  getMemory: NodeGetMemory,
+  move: NodeMove,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,24 +120,24 @@ function Flow() {
   const [yggNodes, setYggNodes] = useState<YggNode[]>([]);
   const [yggEdges, setYggEdges] = useState<YggEdge[]>([]);
 
-  const nodeMutation = useMutation((nodes: YggNode[]) => {
-    return axios.post('http://localhost:9000/update/nodes', nodes, { headers: { 'Content-Type': 'application/json' } });
+  const updateMutation = useMutation((state: {nodes: YggNode[], edges: YggEdge[]}) => {
+    return axios.post('http://localhost:9000/update', 
+      state,
+      { headers: { 'Content-Type': 'application/json' } });
   });
 
-  const edgeMutation = useMutation((edges: YggEdge[]) => {
-    return axios.post('http://localhost:9000/update/edges', edges, { headers: { 'Content-Type': 'application/json' } });
-  });
-
-  const debouncedNodeMutation = useCallback(debounce(nodeMutation.mutate, 500), [nodeMutation.mutate]);
-  const debouncedEdgeMutation = useCallback(debounce(edgeMutation.mutate, 500), [edgeMutation.mutate]);
+  const debouncedNodeMutation = useCallback(debounce(updateMutation.mutate, 500), [updateMutation.mutate]);
 
   useEffect(() => {
+    if (edges.length > 0) {
     setYggNodes(nodes.map(mapToYggNode));
-    debouncedNodeMutation(yggNodes);
-
     setYggEdges(edges.map(mapToYggEdge));
-    debouncedEdgeMutation(yggEdges);
-  }, [debouncedNodeMutation, nodes, edges, debouncedEdgeMutation]);
+    }
+  }, [nodes, edges]);
+
+  useEffect(() => {
+    debouncedNodeMutation({nodes: yggNodes, edges: yggEdges});
+  },[yggNodes, yggEdges, debouncedNodeMutation])
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nodes) => applyNodeChanges(changes, nodes)),

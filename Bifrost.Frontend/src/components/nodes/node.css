@@ -1,14 +1,3 @@
-.toolbox-logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.toolbox-logo h1 {
-    font-size: 1.5rem;
-    margin-bottom: 2;
-}
-
 .node-title p {
     margin: 0;
     font-size: 10pt;
@@ -63,5 +52,11 @@
 }
 
 .react-flow__handle {
-    background-color: var(--c-black);
+    background-color: #fff;
+    border: 1px solid var(--c-black);
+    border-bottom: 2px solid var(--c-black);
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 2px 7px 5px #ffffff3b;
 }

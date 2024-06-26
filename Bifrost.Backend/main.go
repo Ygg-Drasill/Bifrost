@@ -9,10 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 )
 
+type updateRequest struct {
+	Nodes []models.Node `json:"nodes"`
+	Edges []models.Edge `json:"edges"`
+}
+
 func main() {
-	ydt := transformer.NewYggdrasillTransformer("./out.ygl")
+	targetPath := os.Args[1]
 
 	router := gin.Default()
 	config := cors.DefaultConfig()
@@ -20,11 +26,11 @@ func main() {
 	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 	router.Use(cors.New(config))
 
-	nodesHandler := func(context *gin.Context) {
-		var nodes []models.Node
-		utils.HandleError(context.BindJSON(&nodes))
-		fmt.Println(nodes)
-		ydt.UpdateNodes(nodes)
+	updateHandler := func(context *gin.Context) {
+		var request updateRequest
+		utils.HandleError(context.ShouldBindJSON(&request))
+		fmt.Println(request.Nodes, request.Edges)
+		ydt := transformer.NewYggdrasillTransformer(targetPath, request.Nodes, request.Edges)
 		ydt.ParseToFile()
 		ydt.Compile()
 		context.JSON(http.StatusOK, gin.H{
@@ -32,20 +38,7 @@ func main() {
 		})
 	}
 
-	edgesHandler := func(context *gin.Context) {
-		var edges []models.Edge
-		utils.HandleError(context.BindJSON(&edges))
-		fmt.Println(edges)
-		ydt.UpdateEdges(edges)
-		ydt.ParseToFile()
-		ydt.Compile()
-		context.JSON(http.StatusOK, gin.H{
-			"message": "edges updated",
-		})
-	}
-
-	router.POST("/update/nodes", nodesHandler)
-	router.POST("/update/edges", edgesHandler)
+	router.POST("/update", updateHandler)
 
 	err := router.Run(":9000")
 	if err != nil {

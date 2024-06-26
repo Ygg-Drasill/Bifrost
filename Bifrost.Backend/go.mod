@@ -3,7 +3,7 @@ module bifrost
 go 1.22
 
 require (
-	github.com/Ygg-Drasill/Sleipnir v1.0.1
+	github.com/Ygg-Drasill/Sleipnir v1.3.1
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 )
