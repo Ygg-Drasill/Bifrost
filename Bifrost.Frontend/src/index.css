@@ -12,6 +12,7 @@
   --c-black: rgb(13, 15, 22);
   --c-green: rgb(196, 240, 53);
 
+  color: var(--c-black);
   margin: 0;
   padding: 0;
   border: 0;

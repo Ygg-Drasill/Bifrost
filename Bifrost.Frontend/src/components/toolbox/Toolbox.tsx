@@ -1,19 +1,45 @@
-import "./toolbox.css"
+import { DragEvent } from "react";
+import "./toolbox.css";
 
 function ToolBox() {
-  const onDragStart = (event, nodeType) => {
-    event.dataTransfer.setData('application/reactflow', nodeType);
-    event.dataTransfer.effectAllowed = 'move';
+  const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
+    event.dataTransfer.setData("application/reactflow", nodeType);
+    event.dataTransfer.effectAllowed = "move";
   };
+
+  const nodes = [
+    "declare",
+    "compare",
+    "arithmetic",
+    "add",
+    "subtract",
+    "multiply",
+    "divide",
+    "modulo",
+    "print",
+    "ifstatement",
+    "getMemory",
+    "setMemory",
+    "move"
+  ]
 
   return (
     <div className="toolbox">
       <div className="node-list">
-        <div className="toolbox-node-item" onDragStart={event => onDragStart(event, "compare")} draggable>
-
-        </div>
+        {nodes.map((nodeType, i) => (
+            <div
+            className="toolbox-node-item"
+            onDragStart={(event) => onDragStart(event, nodeType)}
+            draggable
+          >
+            {nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}
+          </div>
+        ))}
       </div>
-      <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
+      <div className="toolbox-footer">
+        <a className="logo" href="https://github.com/Ygg-Drasill/Bifrost"></a>
+        <h1>Bifrost</h1>
+      </div>
     </div>
   );
 }
