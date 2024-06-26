@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Ygg-Drasill/Sleipnir/pkg/compiler"
+	"os"
+	"path"
 	"strings"
 )
 
@@ -33,6 +35,9 @@ func (yt *YggdrasillTransformer) ParseToFile() {
 	}
 
 	yt.generateCodeFile()
+	if err := os.WriteFile(path.Clean(fmt.Sprintf("%s/o.ygl", yt.targetFilePath)), yt.yglBuffer.Bytes(), 0644); err != nil {
+		fmt.Println("failed to write ygl")
+	}
 }
 
 func (yt *YggdrasillTransformer) Compile() {
