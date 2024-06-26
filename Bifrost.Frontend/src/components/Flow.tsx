@@ -20,7 +20,7 @@ import ReactFlow, {
 } from 'reactflow';
 import NodeArithmetic from './nodes/NodeArithmetic';
 import NodeCompare from './nodes/NodeCompare';
-import NodeDeclare from "./nodes/NodeDeclare";
+import NodeInteger, { NodeIntegerData } from "./nodes/NodeInteger";
 import NodeIfstatement from './nodes/NodeIfstatement';
 import NodeResult from './nodes/NodeResult';
 import './nodes/node.css';
@@ -49,7 +49,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const nodeTypes: NodeTypes = {
   compare: NodeCompare,
   arithmetic: NodeArithmetic,
-  declare: NodeDeclare,
+  integer: NodeInteger,
   print: NodeResult,
   ifstatement: NodeIfstatement,
   add: NodeAdd,
@@ -80,6 +80,7 @@ export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: nu
 export type YggNode = {
   id: string;
   nodeType: string;
+  data?: object;
 };
 
 export type YggEdge = {
@@ -94,6 +95,7 @@ function mapToYggNode(node: Node): YggNode {
     throw new Error(`Node type is not defined for node with id ${node.id}`);
   }
   return {
+    data: node.data,
     id: node.id,
     nodeType: node.type,
   };
@@ -129,14 +131,41 @@ function Flow() {
   const debouncedNodeMutation = useCallback(debounce(updateMutation.mutate, 500), [updateMutation.mutate]);
 
   useEffect(() => {
-    if (edges.length > 0) {
     setYggNodes(nodes.map(mapToYggNode));
     setYggEdges(edges.map(mapToYggEdge));
-    }
-  }, [nodes, edges]);
+  }, [edges, nodes]);
 
   useEffect(() => {
-    debouncedNodeMutation({nodes: yggNodes, edges: yggEdges});
+    console.log(nodes);
+    const updatedNodes = nodes.map((node) => {
+      if (node.type === 'integer') {
+        node.data = {
+          ...node.data,
+          onChange: (id: string, value: number) => {
+            console.log(value);
+            
+            const updatedNodes = nodes.map((n) => {
+              if (n.id === id) {
+                n.data = {
+                  ...n.data,
+                  value,
+                };
+              }
+              return n;
+            });
+            setNodes(updatedNodes);
+          },
+        }
+      }
+      return node
+    });
+    setNodes(updatedNodes);
+  }, [nodes.length])
+
+  useEffect(() => {
+    if (edges.length > 0) {
+      debouncedNodeMutation({nodes: yggNodes, edges: yggEdges});
+    }
   },[yggNodes, yggEdges, debouncedNodeMutation])
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -162,6 +191,9 @@ function Flow() {
 
   const onDropCallback = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
+      const nodeId = getId()
+      let typeData: NodeIntegerData | undefined = undefined;
+
       if (reactFlowInstance == undefined) return;
       if (event.dataTransfer == null) return;
       event.preventDefault();
@@ -178,15 +210,14 @@ function Flow() {
       });
 
       const newNode = {
-        id: getId(),
+        id: nodeId,
         type,
         position,
-        data: { label: `${type} node` },
+        data: { label: `${type} node`, value: 0, ...typeData},
       };
-
-      setNodes((nds) => nds.concat(newNode));
+      setNodes((nodes) => nodes.concat(newNode));
     },
-    [reactFlowInstance],
+    [reactFlowInstance, yggNodes],
   );
 
   return (
