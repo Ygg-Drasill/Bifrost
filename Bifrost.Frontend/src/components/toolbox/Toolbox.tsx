@@ -8,7 +8,7 @@ function ToolBox() {
   };
 
   const nodes = [
-    "declare",
+    "integer",
     "compare",
     "arithmetic",
     "add",
@@ -26,7 +26,7 @@ function ToolBox() {
   return (
     <div className="toolbox">
       <div className="node-list">
-        {nodes.map((nodeType, i) => (
+        {nodes.map((nodeType) => (
             <div
             className="toolbox-node-item"
             onDragStart={(event) => onDragStart(event, nodeType)}

@@ -69,8 +69,13 @@ func (yt *YggdrasillTransformer) generateCodeFile() {
 
 func (yt *YggdrasillTransformer) nodeToYggrasill(node models.Node) string {
 	var nodeName = strings.Join([]string{node.NodeType, node.Id}, "")
-	if node.NodeType == "declare" {
-		return fmt.Sprintf("node %s { out { int value = %d; } }\n", utils.FormatNodeName(nodeName), 42)
+	if node.NodeType == "integer" {
+		if data, ok := node.Data.(map[string]interface{}); ok {
+			literal := data["value"].(float64)
+			return fmt.Sprintf("node %s { out { int value = %d; } }\n", utils.FormatNodeName(nodeName), int(literal))
+		}
+		fmt.Println("failed to convert node data to integer")
+		return ""
 	}
 	return fmt.Sprintf("node %s : %s;\n", utils.FormatNodeName(nodeName), utils.FormatNodeName(node.NodeType))
 }
